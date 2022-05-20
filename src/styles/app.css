@@ -1,0 +1,103 @@
+.special {
+  color: #ffc800;
+}
+
+.green {
+  color: green;
+}
+
+.red {
+  color: red;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.btn {
+  background-color: #b8ac90;
+  color: #1e1c15;
+  font-weight: bold;
+  border: none;
+  outline: none;
+  text-align: center;
+  padding: 3px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+img {
+  width: 32px;
+  border-radius: 15px;
+  margin-bottom: 5px;
+}
+
+#appTitle {
+  font-weight: bold;
+}
+
+#websiteInfo {
+  margin-top: 10px;
+  text-align: center;
+  height: 325px;
+  background-color: #514b34;
+  padding: 5px;
+  border-radius: 7px;
+}
+
+#websiteInfo header {
+  line-height: 35px;
+}
+
+#websiteInfo header h1 {
+  font-size: 22px;
+  color: #ffc800;
+  font-weight: bold;
+}
+
+#websiteInfo header h2 {
+  color: #eae5dd;
+}
+
+#websiteInfo header #TimerStatus {
+  cursor: pointer;
+}
+
+#websiteInfo header #valueInfo {
+  line-height: normal;
+  text-align: justify;
+}
+
+#websiteInfo section {
+  margin: 10px 0;
+}
+
+#websiteInfo section h2 {
+  font-size: 20px;
+}
+
+#websiteInfo section form {
+  margin-top: 5px;
+}
+
+#websiteInfo section form input {
+  width: 60px;
+  border-radius: 5px;
+  background-color: #3a3426;
+  color: #f8f8f5;
+  border: none;
+  outline: none;
+  text-align: center;
+  padding: 5px 15px;
+}
+
+#websiteInfo section form input::-webkit-outer-spin-button,
+#websiteInfo section form input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#websiteInfo section form input[type="number"] {
+  -moz-appearance: textfield;
+}
+/*# sourceMappingURL=app.css.map */

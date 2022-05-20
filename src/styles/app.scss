@@ -1,0 +1,106 @@
+$main-50: #f8f8f5;
+$main-100: #eae5dd;
+$main-200: #d5ccba;
+$main-300: #b8ac90;
+$main-400: #998b68;
+$main-500: #7e724e;
+$main-600: #645b3d;
+$main-700: #514b34;
+$main-800: #433d2c;
+$main-900: #1e1c15;
+
+$mainColor: #ffc800;
+
+.special {
+  color: $mainColor;
+}
+.green {
+  color: green;
+}
+.red {
+  color: red;
+}
+.bold {
+  font-weight: bold;
+}
+
+.btn {
+  background-color: $main-300;
+  color: $main-900;
+  font-weight: bold;
+  border: none;
+  outline: none;
+  text-align: center;
+  padding: 3px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+img {
+  width: 32px;
+  border-radius: 15px;
+  margin-bottom: 5px;
+}
+#appTitle {
+  font-weight: bold;
+}
+
+#websiteInfo {
+  margin-top: 10px;
+  text-align: center;
+  height: 325px;
+  background-color: $main-700;
+  padding: 5px;
+  border-radius: 7px;
+
+  header {
+    line-height: 35px;
+    h1 {
+      font-size: 22px;
+      color: $mainColor;
+      font-weight: bold;
+    }
+    h2 {
+      color: $main-100;
+    }
+
+    #TimerStatus {
+      cursor: pointer;
+    }
+    #valueInfo {
+      line-height: normal;
+      text-align: justify;
+    }
+  }
+
+  section {
+    margin: 10px 0;
+    h2 {
+      font-size: 20px;
+    }
+    form {
+      margin-top: 5px;
+      input {
+        width: 60px;
+        border-radius: 5px;
+
+        background-color: #3a3426;
+        color: $main-50;
+
+        border: none;
+        outline: none;
+
+        text-align: center;
+        padding: 5px 15px;
+      }
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+    }
+  }
+}
