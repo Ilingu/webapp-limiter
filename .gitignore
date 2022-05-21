@@ -15,6 +15,7 @@ dist-ssr
 *.local
 
 .vscode
+/app.zip
 
 # Editor directories and files
 .vscode/*

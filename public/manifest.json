@@ -1,6 +1,6 @@
 {
   "name": "Webapp Limiter",
-  "description": "Chrome Extension which block access on website after a specified amount of time",
+  "description": "Website Time Limiter",
   "version": "1.0.0",
   "manifest_version": 3,
   "icons": {
