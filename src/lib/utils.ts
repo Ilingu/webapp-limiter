@@ -10,9 +10,7 @@ export const ExecuteScript = async (funcToExec: () => void) => {
 };
 
 export const SetStorage = (NewStorage: StorageShape) => {
-  chrome.storage.sync.set({ storage: NewStorage }, () => {
-    console.log("Set!");
-  });
+  chrome.storage.sync.set({ storage: NewStorage });
 };
 
 export const FormatMinToHourMin = (timeToFormat: number) => {

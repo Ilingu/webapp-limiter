@@ -2,8 +2,7 @@
 
 ### **This project is a Chrome Extension that block access on website after a specified amount of time**
 
-[![SITE](https://forthebadge.com/images/badges/check-it-out.svg)](https://chrome.google.com/webstore/category/extensions)
-(PS: l'extension n'a pas encore été validé par Google, elle n'est donc pas encore disponible)
+[![SITE](https://forthebadge.com/images/badges/check-it-out.svg)](https://chrome.google.com/webstore/detail/webapp-limiter/jcdnlcfioanlgmloihnnhkhpbbjhieod)
 
 ### Release
 

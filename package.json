@@ -1,7 +1,7 @@
 {
   "name": "webapp-limiter",
   "private": true,
-  "version": "1.0.0-beta",
+  "version": "2.0.0-beta",
   "description": "Chrome Extension which block access on website after a specified amount of time",
   "keywords": [
     "Time Limiter",

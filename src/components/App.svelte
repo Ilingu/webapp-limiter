@@ -54,6 +54,7 @@
 
     const NewStorage = { ...storage, [hostUrl]: WebappLimiter };
     SetStorage(NewStorage);
+    CurrentApp = WebappLimiter;
   };
 
   const ToggleTimerState = () => {
