@@ -36,7 +36,6 @@ let hostUrl: string;
 let Storage: StorageShape = {};
 let CurrentApp: WebsiteLimiterShape;
 
-let ProcessPort: chrome.runtime.Port;
 let SessionToken: string;
 
 /* SESSION */
@@ -48,6 +47,7 @@ const LaunchProcess = () => {
     return BlockWebSite();
 
   CurrentApp.LastSession = Date.now();
+  CurrentApp.ActiveSession = true;
   if (
     !CurrentApp?.ElapsedTime ||
     CurrentApp.ElapsedTime === CurrentApp.MAX_TIME
@@ -56,9 +56,10 @@ const LaunchProcess = () => {
   SetStorage(Storage);
 
   /* Connection */
-  if (!ProcessPort) MakeConn(); // Init Conn
+  SessionToken = crypto.randomUUID();
+  chrome.runtime.onMessage.addListener((msg) => ListenWorker(msg)); // Listener
+
   StartProcess();
-  ProcessPort.onMessage.addListener(ListenWorker); // Listener
 
   // On Quit
   window.addEventListener("beforeunload", StopProcess);
@@ -90,27 +91,29 @@ const StartProcess = () => {
     do: ConnInstruction.WORK,
     proof: SessionToken,
   };
-  ProcessPort.postMessage(StartPayload);
+  SendMessage(StartPayload);
 };
 
 const StopProcess = () => {
-  if (!ProcessPort || !SessionToken) return;
+  if (!SessionToken) return;
 
   const StopPayload: BgCallPayload = {
     do: ConnInstruction.REST,
     proof: SessionToken,
   };
-  ProcessPort.postMessage(StopPayload);
-  ProcessPort.disconnect();
-
-  ProcessPort = null;
+  SendMessage(StopPayload);
   SessionToken = null;
+
+  CurrentApp = Storage[hostUrl];
+  CurrentApp.ActiveSession = false;
+  SetStorage(Storage);
 };
 
 /* HELPERS */
-const MakeConn = () => {
-  SessionToken = crypto.randomUUID();
-  ProcessPort = chrome.runtime.connect({ name: SessionToken });
+const SendMessage = (payload: BgCallPayload) => {
+  if (!SessionToken) return;
+
+  chrome.runtime.sendMessage(payload);
 };
 
 const BlockWebSite = () => {
@@ -126,10 +129,11 @@ const ValidSessionTime = (LastSession: number) => {
   const tomorrow = new Date(LastSession);
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
-
+  console.log(CurrentApp.ActiveSession);
   if (
     Now >= tomorrow.getTime() ||
-    CurrentApp.ElapsedTime !== CurrentApp.MAX_TIME
+    CurrentApp.ElapsedTime !== CurrentApp.MAX_TIME ||
+    !CurrentApp.ActiveSession
   )
     return true;
   return false;

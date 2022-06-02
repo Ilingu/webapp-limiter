@@ -5,20 +5,22 @@ chrome.runtime.onInstalled.addListener(() => {
   LauchBgServer();
 });
 
-let ResetInterval: { [token: string]: number } = {};
-let Ports: { [token: string]: chrome.runtime.Port } = {};
+type TokenIdShape = { [token: string]: number };
+let ResetInterval: TokenIdShape = {},
+  TokenToId: TokenIdShape = {};
 let SessionToken: string[] = [];
 
 const LauchBgServer = () => {
   /* Content Script Listener */
-  chrome.runtime.onConnect.addListener((port) => {
-    port.onMessage.addListener(HandleNewInstruction); // Incoming Call
+  chrome.runtime.onMessage.addListener((req, sender) => {
+    const Token = req?.proof;
+    if (!Token || typeof Token != "string") return;
+    if (!VerifyProofOfCall(Token || "")) {
+      SessionToken = [...SessionToken, Token];
+      TokenToId[Token] = sender.tab.id;
+    }
 
-    const Token = port.name;
-    Ports = { ...Ports, [Token]: port };
-    SessionToken = [...SessionToken, Token];
-
-    port.onDisconnect.addListener(() => StopProcess(Token));
+    HandleNewInstruction(req);
   });
   /* Storage Change Listener */
   chrome.storage.onChanged.addListener((changes, namescape) => {
@@ -50,21 +52,23 @@ const HandleNewInstruction = (Instruction: BgCallPayload) => {
 };
 
 const StartProcess = (Token: string) => {
+  if (!Token) return;
   const WorkProof = setInterval(() => {
-    Ports[Token].postMessage({
+    console.log(TokenToId, SessionToken);
+    SendResponse(TokenToId[Token], {
       WorkSucceed: true,
       proof: Token,
       resType: ConnInstruction.REPORT,
     } as BgResShape);
-  }, 60_000);
+  }, 1000); // 60_000
   ResetInterval = { ...ResetInterval, [Token]: WorkProof };
 };
 
 const StopProcess = (Token: string) => {
-  if (!Ports[Token] || !ResetInterval[Token]) return;
+  if (!TokenToId[Token] || !ResetInterval[Token]) return;
   clearInterval(ResetInterval[Token]);
 
-  delete Ports[Token];
+  delete TokenToId[Token];
   delete ResetInterval[Token];
   const TokenIndex = SessionToken.indexOf(Token);
   if (TokenIndex === -1) return;
@@ -75,4 +79,8 @@ const StopProcess = (Token: string) => {
 const VerifyProofOfCall = (proof: string): boolean => {
   if (SessionToken.includes(proof)) return true;
   return false;
+};
+
+const SendResponse = (tabId: number, payload: BgResShape) => {
+  chrome.tabs.sendMessage(tabId, payload);
 };

@@ -8,6 +8,7 @@ export interface WebsiteLimiterShape {
   MAX_TIME: number;
   ElapsedTime?: number;
   LastSession?: number /* timestamp */;
+  ActiveSession: boolean;
 }
 
 export enum ConnInstruction {

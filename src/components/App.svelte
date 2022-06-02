@@ -50,6 +50,7 @@
       MAX_TIME,
       ElapsedTime: CurrentApp?.ElapsedTime || undefined,
       LastSession: CurrentApp?.LastSession || undefined,
+      ActiveSession: false,
     };
 
     const NewStorage = { ...storage, [hostUrl]: WebappLimiter };
