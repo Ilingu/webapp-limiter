@@ -1,12 +1,14 @@
 # Webapp Timer Limiter ⏱️🔒
 
+### ➡️ You're currently on the V2 of this app which does not work well: [**GO TO V1**](https://github.com/Ilingu/webapp-limiter/tree/master)
+
 ### **This project is a Chrome Extension that block access on website after a specified amount of time**
 
 [![SITE](https://forthebadge.com/images/badges/check-it-out.svg)](https://chrome.google.com/webstore/detail/webapp-limiter/jcdnlcfioanlgmloihnnhkhpbbjhieod)
 
 ### Release
 
-[![SITE](https://img.shields.io/badge/release-beta-blue)](https://lycee-mb-tombola.vercel.app)
+[![SITE](https://img.shields.io/badge/release-beta-blue)](https://chrome.google.com/webstore/detail/webapp-limiter/jcdnlcfioanlgmloihnnhkhpbbjhieod)
 
 ## Technologies
 
@@ -15,7 +17,7 @@
 
 ## Compatibilities
 
-[![SITE](https://img.shields.io/static/v1?label=Compatible%20With&message=Chrome%20Web%20Store&color=C13B3A)](https://lycee-mb-tombola.vercel.app)
+[![SITE](https://img.shields.io/static/v1?label=Compatible%20With&message=Chrome%20Web%20Store&color=C13B3A)](https://chrome.google.com/webstore/detail/webapp-limiter/jcdnlcfioanlgmloihnnhkhpbbjhieod)
 
 ## Uninteresting stuff
 
