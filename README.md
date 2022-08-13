@@ -1,6 +1,4 @@
-# Webapp Timer Limiter ⏱️🔒
-
-### ➡️ You're currently on the V2 of this app which does not work well: [**GO TO V1**](https://github.com/Ilingu/webapp-limiter/tree/master)
+# Webapp Time Limiter ⏱️🔒
 
 ### **This project is a Chrome Extension that block access on website after a specified amount of time**
 

@@ -9,8 +9,9 @@ export const ExecuteScript = async (funcToExec: () => void) => {
   });
 };
 
-export const SetStorage = (NewStorage: StorageShape) => {
-  chrome.storage.sync.set({ storage: NewStorage });
+export const SetStorage = async (NewStorage: StorageShape) => {
+  await chrome.storage.sync.set({ storage: NewStorage });
+  console.log("[LOG] [Webapp Limiter] STORAGE SET! ", { NewStorage });
 };
 
 export const FormatMinToHourMin = (timeToFormat: number) => {
@@ -21,4 +22,24 @@ export const FormatMinToHourMin = (timeToFormat: number) => {
 export const EmptyStorage = (storage: object) => {
   if (storage && Object.keys(storage).length > 0) return false;
   return true;
+};
+
+interface IdleArgs {
+  idleTimeout: number;
+  onIdle: () => void;
+  onActive: () => void;
+}
+
+export const IsIdle = ({ idleTimeout, onIdle, onActive }: IdleArgs) => {
+  let timeoutTimer = setTimeout(onIdle, idleTimeout);
+  const RetryTimeout = () => {
+    onActive();
+    timeoutTimer && clearTimeout(timeoutTimer);
+    timeoutTimer = setTimeout(onIdle, idleTimeout);
+  };
+
+  document.addEventListener("mousemove", RetryTimeout);
+  document.addEventListener("keydown", RetryTimeout);
+  document.addEventListener("mousedown", RetryTimeout);
+  document.addEventListener("touchstart", RetryTimeout);
 };

@@ -1,15 +1,9 @@
-import type {
-  StorageShape,
-  WebsiteLimiterShape,
-  BgCallPayload,
-  BgResShape,
-} from "./lib/types";
-import { ConnInstruction } from "./lib/types";
-import { SetStorage } from "./lib/utils";
+import type { StorageShape, WebsiteLimiterShape } from "./lib/types";
+import { IsIdle, SetStorage } from "./lib/utils";
 
-window.onload = () => {
+const LogExtension = () => {
   console.log(
-    "%cWebapp Limiter ⏱️ (BETA.2)",
+    "%cWebapp Limiter ⏱️ (BETA.3.2)",
     `
 			text-transform: uppercase;
 			background: #000;
@@ -20,103 +14,92 @@ window.onload = () => {
 			text-shadow: -1px -1px 0 rgba(251, 1, 252, 0.5),
 									1px 1px 0 rgba(4, 251, 246, 0.5);`
   );
+};
+
+window.onload = () => {
+  LogExtension();
+
   hostUrl = window.location.host;
   chrome.storage.sync.get("storage", ({ storage: initialStorage }) => {
     Storage = initialStorage;
-    LaunchProcess();
+    LauchProcess();
+    if (!CurrentApp || !CurrentApp?.enable) return;
+    /* Is User Idle Listener */
+    IsIdle({
+      idleTimeout: 60_000,
+      onActive: () => {
+        isIdle = false;
+        if (!CurrentApp || !CurrentApp?.enable) return;
+        if (!ResetInterval) LauchProcess();
+      },
+      onIdle: () => {
+        isIdle = true;
+        StopSession();
+      },
+    });
   });
+
   /* Storage Change Listener */
   chrome.storage.onChanged.addListener((changes) => {
     for (let [key, { newValue }] of Object.entries(changes))
       if (key === "storage") Storage = newValue;
+    if (!ResetInterval && !isIdle) LauchProcess();
   });
 };
 
 let hostUrl: string;
 let Storage: StorageShape = {};
 let CurrentApp: WebsiteLimiterShape;
-
-let SessionToken: string;
+let ResetInterval: number;
+let isIdle = false;
 
 /* SESSION */
-const LaunchProcess = () => {
+const LauchProcess = () => {
+  console.log("[LOG] [Webapp Limiter] Launching App...");
   // Init
   CurrentApp = Storage[hostUrl];
-  if (!CurrentApp || !CurrentApp?.enable) return;
-  if (CurrentApp?.LastSession && !ValidSessionTime(CurrentApp.LastSession))
+  if (!CurrentApp || !CurrentApp?.enable || isIdle) return;
+  // Check Block Page
+  if (
+    CurrentApp?.LastSession &&
+    !IsSessionExpired(CurrentApp.LastSession) &&
+    CurrentApp.ElapsedTime >= CurrentApp.MAX_TIME
+  )
     return BlockWebSite();
 
-  CurrentApp.LastSession = Date.now();
-  CurrentApp.ActiveSession = true;
-  if (
-    !CurrentApp?.ElapsedTime ||
-    CurrentApp.ElapsedTime === CurrentApp.MAX_TIME
-  )
+  if (CurrentApp?.LastSession && IsSessionExpired(CurrentApp.LastSession))
     CurrentApp.ElapsedTime = 0;
+  CurrentApp.LastSession = Date.now();
+
   SetStorage(Storage);
-
-  /* Connection */
-  SessionToken = crypto.randomUUID();
-  chrome.runtime.onMessage.addListener((msg) => ListenWorker(msg)); // Listener
-
-  StartProcess();
+  ResetInterval = setInterval(IncrementSessionTime, 60_000); // start 1min timer loop
 
   // On Quit
-  window.addEventListener("beforeunload", StopProcess);
-};
-
-const ListenWorker = (workerRes: BgResShape) => {
-  if (!workerRes.WorkSucceed) return;
-  if (workerRes.proof != SessionToken) return;
-
-  // Handle Res
-  if (workerRes.resType === ConnInstruction.REPORT) IncrementSessionTime();
+  window.addEventListener("beforeunload", StopSession);
 };
 
 const IncrementSessionTime = () => {
   CurrentApp = Storage[hostUrl];
-  if (!CurrentApp || !CurrentApp?.enable) return StopProcess();
+  if (!CurrentApp || !CurrentApp?.enable || isIdle) return StopSession();
+
   CurrentApp.ElapsedTime++;
   if (CurrentApp.ElapsedTime === CurrentApp.MAX_TIME) {
     BlockWebSite();
-    StopProcess();
+    StopSession();
   }
+
   SetStorage(Storage);
-
-  console.log("[LOG] [Webapp Limiter] SET! ", { CurrentApp });
+  console.log("[LOG] [Webapp Limiter] SET!", { CurrentApp });
 };
 
-const StartProcess = () => {
-  const StartPayload: BgCallPayload = {
-    do: ConnInstruction.WORK,
-    proof: SessionToken,
-  };
-  SendMessage(StartPayload);
-};
-
-const StopProcess = () => {
-  if (!SessionToken) return;
-
-  const StopPayload: BgCallPayload = {
-    do: ConnInstruction.REST,
-    proof: SessionToken,
-  };
-  SendMessage(StopPayload);
-  SessionToken = null;
-
-  CurrentApp = Storage[hostUrl];
-  CurrentApp.ActiveSession = false;
-  SetStorage(Storage);
-};
-
-/* HELPERS */
-const SendMessage = (payload: BgCallPayload) => {
-  if (!SessionToken) return;
-
-  chrome.runtime.sendMessage(payload);
+const StopSession = () => {
+  console.log("[LOG] [Webapp Limiter] Session Stopped!");
+  clearInterval(ResetInterval);
+  ResetInterval = null;
 };
 
 const BlockWebSite = () => {
+  console.log("[LOG] [Webapp Limiter] Blocking Website");
   document.body.innerHTML = `<div style="text-align: center">
             <h1>Time Elapsed! Website locked for today 🔒</h1>
             <h2>❌ Come back tomorrow</h2>
@@ -124,19 +107,11 @@ const BlockWebSite = () => {
       </div>`;
 };
 
-const ValidSessionTime = (LastSession: number) => {
-  const Now = Date.now();
+// HELPERS
+const IsSessionExpired = (LastSession: number): boolean => {
   const tomorrow = new Date(LastSession);
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
-  console.log(CurrentApp.ActiveSession);
-  if (
-    Now >= tomorrow.getTime() ||
-    CurrentApp.ElapsedTime !== CurrentApp.MAX_TIME ||
-    !CurrentApp.ActiveSession
-  )
-    return true;
-  return false;
-};
 
-// https://developer.chrome.com/docs/extensions/mv3/messaging/
+  return Date.now() >= tomorrow.getTime();
+};

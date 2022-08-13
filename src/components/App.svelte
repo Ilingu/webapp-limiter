@@ -48,9 +48,8 @@
       url: hostUrl,
       enable: true,
       MAX_TIME,
-      ElapsedTime: CurrentApp?.ElapsedTime || undefined,
-      LastSession: CurrentApp?.LastSession || undefined,
-      ActiveSession: false,
+      ElapsedTime: CurrentApp?.ElapsedTime || 0,
+      LastSession: CurrentApp?.LastSession || Date.now(),
     };
 
     const NewStorage = { ...storage, [hostUrl]: WebappLimiter };
@@ -109,7 +108,10 @@
               )}
             </span>
           </h3>
-          <h3 style="font-size: 16px;">
+          <h3
+            style="font-size: 16px;"
+            title={new Date(CurrentApp.LastSession).toLocaleString()}
+          >
             Last Session: <span class="special bold"
               >{CurrentApp?.LastSession
                 ? new Date(CurrentApp.LastSession).toLocaleDateString()

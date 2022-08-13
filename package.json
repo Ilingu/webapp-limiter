@@ -1,7 +1,7 @@
 {
   "name": "webapp-limiter",
   "private": true,
-  "version": "2.1.0-beta",
+  "version": "3.3.0-beta",
   "description": "Chrome Extension which block access on website after a specified amount of time",
   "keywords": [
     "Time Limiter",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ilingu/webapp-limiter"
+    "url": "https://github.com/Ilingu/webapp-limiter.git"
   },
   "scripts": {
     "build": "rollup -c",
@@ -36,5 +36,8 @@
     "svelte-preprocess": "^4.9.8",
     "tslib": "^2.3.1",
     "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "prettier": "^1.16.4 || ^2.0.0"
   }
 }
